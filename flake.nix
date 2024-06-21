@@ -1,5 +1,7 @@
 {
-  description = "Meetings summary, ,,, , ,";
+  description = "Meetings transcripts....";
+
+  inputs.nixpkgs-unstable.url = "nixpkgs-unstable";
 
   outputs = {
     self,
@@ -8,19 +10,32 @@
     lib = nixpkgs-unstable.lib;
     forAllSystems = genExpr: lib.genAttrs lib.systems.flakeExposed genExpr;
     nixpkgsFor = forAllSystems (system: import nixpkgs-unstable {inherit system;});
+    version = lib.substring 0 8 self.lastModifiedDate;
   in {
     formatter = forAllSystems (system: nixpkgsFor.${system}.alejandra);
     packages = forAllSystems (system: let
       pkgs = nixpkgsFor.${system};
-    in {
-      default = pkgs.callPackage ({
+      point = pkgs.callPackage ({
         stdenvNoCC,
         python3,
       }:
         stdenvNoCC.mkDerivation {
-          name = "virgule";
-          buildInputs = [(python3.withPackages (p: [p.faster-whisper]))];
+          name = "point";
+          buildInputs = [(python3.withPackages (p: [p.faster-whisper p.flask]))];
         }) {};
+    in {
+      inherit point;
+      default = point;
+      point-docker = pkgs.dockerTools.buildLayeredImage {
+        name = "point";
+        tag = "latest";
+        created = version;
+        contents = [point];
+        # TODO
+        config = {
+          # Cmd = ["${}"];
+        };
+      };
     });
   };
 }
