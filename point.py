@@ -75,9 +75,10 @@ in a folder called 'whisper-models' in the current directory.)
         default=5000,
         help="The port on which the HTTP server will listen.",
     )
+    parser.add_argument("--host", type=str, default="0.0.0.0", help="The host IP to bind to.")
     parser.add_argument("--verbose", action="store_true", help="Output MORE LOGS")
 
     args = parser.parse_args()
     logging.basicConfig(level=(logging.DEBUG if args.verbose else logging.INFO))
 
-    app.run(port=args.port, threaded=True)
+    app.run(host=args.host, port=args.port, threaded=True)
