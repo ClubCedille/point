@@ -15,8 +15,7 @@ app = Flask(__name__)
 
 logger = logging.getLogger("point")
 
-model_size = "base"
-
+model_size = os.getenv("WHISPER_MODEL_SIZE", "base")
 
 def transcribe(audio_file: io.BytesIO) -> Iterator[str]:
     header = time.strftime("%Y-%m-%d %H:%M:%S") + f", transcript with {model_size}"
