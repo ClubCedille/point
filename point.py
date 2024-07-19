@@ -24,7 +24,7 @@ def transcribe(audio_file: io.BytesIO) -> Iterator[str]:
 
     # TODO: configurable model path
     whisper = WhisperModel(
-        model_size, download_root="./whisper-models", compute_type="int8"
+        model_size, download_root="./whisper-models", device="cpu"
     )
     segments, _ = whisper.transcribe(
         audio_file,
